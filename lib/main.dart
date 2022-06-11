@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './question.dart';
-import './answer.dart';
-
+import './quiz.dart';
+import './result.dart';
 // void main() {
 //   runApp(MyApp());
 // }
@@ -18,47 +17,67 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var _questionIndex = 0;
 
-  void _answerQuestion() {
+  final questions = const [
+    {
+      'questionText': 'What\'s your favorite color?',
+      'answers': [
+        {'text':'Black','score':2},
+        {'text':'Red','score':5},
+        {'text': 'Green','score':10},
+        {'text':'White','score':1}],
+    },
+    {
+      'questionText': 'What\'s your favorite animal?',
+      'answers': [
+        {'text':'Black','score':2},
+        {'text':'Red','score':5},
+        {'text': 'Green','score':10},
+        {'text':'White','score':1}],
+    },
+    {
+      'questionText': 'Who\'s your favorite instructor?',
+      'answers': [
+        {'text':'Black','score':2},
+        {'text':'Red','score':5},
+        {'text': 'Green','score':10},
+        {'text':'White','score':1}],
+    },
+  ];
+  var _questionIndex = 0;
+  var _totalScore = 0;
+
+  void _answerQuestion(int score) {
+
     setState(() {
+      _totalScore += score;
       _questionIndex = _questionIndex + 1;
     });
     print(_questionIndex);
+    if (_questionIndex < questions.length) {
+      print('we have  more question');
+    } else {
+      print('we dont have');
+    }
+  }
+
+  void _resetQuestion(){
+    setState((){
+      _questionIndex = 0 ;
+      _totalScore = 0;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var questions = [
-      {
-        'questionText': 'What\'s your favorite color?',
-        'answers': ['Black', 'Red', 'Green', 'White'],
-      },
-      {
-        'questionText': 'What\'s your favorite animal?',
-        'answers': ['Rabbit', 'Snake', 'Elephant', 'Lion'],
-      },
-      {
-        'questionText': 'Who\'s your favorite instructor?',
-        'answers': ['Max', 'Max', 'Max', 'Max'],
-      },
-    ];
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('My First App'),
+          title: const Text('My First App'),
         ),
-        body: Column(
-          children: [
-            Question(
-              questions[_questionIndex]['questionText'].toString(),
-            ),
-            ...(questions[_questionIndex]['answers'] as List<String>)
-                .map((answer) {
-              return Answer(_answerQuestion, answer);
-            }).toList()
-          ],
-        ),
+        body: _questionIndex < questions.length
+            ? Quiz(questions:questions,questionIndex: _questionIndex,answerQuestion: _answerQuestion,)
+            : Result(score:_totalScore,reset: _resetQuestion,)
       ),
     );
   }
